@@ -130,7 +130,7 @@ public class Variable {
         }
 
         int indexOfSquareWithTheMostAssignedValue = 0;
-        int numberOfAssignedValue = 0;
+        int numberOfAssignedValue = -1;
 
         for(int i = 0; i < squares.length; i++) {
             if((squares[i] > numberOfAssignedValue) && availableSquares[i] == true) {
@@ -140,7 +140,7 @@ public class Variable {
         }
 
         //System.out.println(indexOfSquareWithTheMostAssignedValue);
-        if(numberOfAssignedValue == 0) {
+        if(numberOfAssignedValue == -1) {
             result.add(-1);
             result.add(-1);
             result.add(-1);

@@ -12,7 +12,10 @@ public class Sudoku extends Problem {
     ArrayList<ArrayList<Integer>> results;
     int returnNumber = 0;
     int nodeNumber = 0;
-    File file = new File("C:\\Users\\domin\\Desktop\\Studia\\VI semestr\\SI\\Zadanie 2\\Sudoku.csv");
+    int allNodeNumber = 0;
+    int allReturnNumber = 0;
+    int numberOfSolution = 0;
+    File file = new File("C:\\Users\\domin\\Desktop\\Studia\\VI semestr\\SI\\Sudoku solver\\Sudoku.csv");
 
     public Sudoku(int number) throws FileNotFoundException {
         this.sudokuTab = Loader.fromFileToSudoku(file, number);
@@ -158,7 +161,7 @@ public class Sudoku extends Problem {
         for(int i = 0; i < SIZE; i++) {
             for(int j = 0; j < SIZE; j++) {
                 if(sudokuTab[i][j] == 0) {
-                    ArrayList<Integer> temp = Variable.firstFromTheMostFilledSquare(sudokuTab);
+                    ArrayList<Integer> temp = Variable.firstCreatedFirstTaken(sudokuTab);
                     int row = temp.get(0);
                     int col = temp.get(1);
                     int domainIndex = temp.get(2);
@@ -167,21 +170,24 @@ public class Sudoku extends Problem {
                         return false;
                     } else {
                         ArrayList<Integer> domain = domains.get(domainIndex);
-                        Value.firstCreatedFirstTaken(domain);
+                        Value.rarestValue(row, col, domains, domain);
+                        //Value.firstCreatedFirstTaken(domain);
                         for(int k = 0; k < domains.get(domainIndex).size(); k++) {
                             int number = domain.get(k);
                             //System.out.println("********* " + row + "  " + col + " ***********");
                             if(isCorrect(row, col, number)) {
                                 //System.out.println("ROW: " + row + " COL: " + col + " NUMBER: " + number);
                                 this.sudokuTab[row][col] = number;
-                                //System.out.println("NOWE SUDOKU:");
-                                //printSudoku();
-                                //nodeNumber++;
+//                                System.out.println("NOWE SUDOKU:");
+//                                printSudoku();
+                                nodeNumber++;
+                                allNodeNumber++;
                                 domains.set(domainIndex, new ArrayList<>());
                                 if(solveBacktracking()) {
                                     return true;
                                 } else {
                                     returnNumber++;
+                                    allReturnNumber++;
                                     this.sudokuTab[row][col] = 0;
                                     domains.set(domainIndex, domain);
                                 }
@@ -193,11 +199,16 @@ public class Sudoku extends Problem {
                 }
             }
         }
-        if(Tools.solved(sudokuTab)) {
-            System.out.println("ROZWIĄZANO");
-            printSudoku();
-        }
-        return false;
+//        if(Tools.solved(sudokuTab)) {
+//            System.out.println("ROZWIĄZANO");
+//            printSudoku();
+//            System.out.println("LICZBA NAWROTOW- 1 rozwiazanie: " + returnNumber);
+//            System.out.println("LICZBA ODWIEDZONYCH WEZLOW- 1 rozwiazanie: " + nodeNumber);
+//            returnNumber = 0;
+//            nodeNumber = 0;
+//            numberOfSolution++;
+//        }
+        return true;
     }
 
     public Boolean solveForward() {
@@ -205,7 +216,7 @@ public class Sudoku extends Problem {
         for(int i = 0; i < SIZE; i++) {
             for(int j = 0; j < SIZE; j++) {
                 if(sudokuTab[i][j] == 0) {
-                    ArrayList<Integer> temp = Variable.firstFromTheMostFilledSquare(sudokuTab);
+                    ArrayList<Integer> temp = Variable.chooseVariableWithTheSmallestDomain(domains);
                     int row = temp.get(0);
                     int col = temp.get(1);
                     int domainIndex = temp.get(2);
@@ -214,7 +225,8 @@ public class Sudoku extends Problem {
                         return false;
                     } else {
                         ArrayList<Integer> domain = domains.get(domainIndex);
-                        Value.firstCreatedFirstTaken(domain);
+                        Value.lastCreatedFirstTaken(domain);
+                        //Value.rarestValue(row, col, domains, domain);
                         for(int k = 0; k < domains.get(domainIndex).size(); k++) {
                             int number = domain.get(k);
                             //System.out.println("********* " + row + "  " + col + " ***********");
@@ -224,6 +236,8 @@ public class Sudoku extends Problem {
                                 //System.out.println("DZIEDZINA:");
                                 //printDomain(domains);
                                 sudokuTab[row][col] = number;
+                                nodeNumber++;
+                                allNodeNumber++;
                                 //System.out.println("NOWE SUDOKU:");
                                 //printSudoku();
                                 ArrayList<ArrayList<Integer>> tempDomains = Tools.cloneDomains(domains);
@@ -234,6 +248,8 @@ public class Sudoku extends Problem {
                                 } else {
                                     this.sudokuTab[row][col] = 0;
                                     domains = tempDomains;
+                                    returnNumber++;
+                                    allReturnNumber++;
                                     //setDomains(createDomains());
                                 }
                             }
@@ -243,6 +259,15 @@ public class Sudoku extends Problem {
                 }
             }
         }
+//        if(Tools.solved(sudokuTab)) {
+//            System.out.println("ROZWIĄZANO");
+//            printSudoku();
+//            System.out.println("LICZBA NAWROTOW- 1 rozwiazanie: " + returnNumber);
+//            System.out.println("LICZBA ODWIEDZONYCH WEZLOW- 1 rozwiazanie: " + nodeNumber);
+//            returnNumber = 0;
+//            nodeNumber = 0;
+//            numberOfSolution++;
+//        }
         return true;
     }
 
